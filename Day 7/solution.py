@@ -9,33 +9,30 @@ def parse():
     root = directory("/")
     path = root
     for line in puzzle:
-        #print(line.strip())
-        #print(path.name)
-
         m = re(r"^\$ cd (.+)$", line) # REGEX WIZARDRY
         if m: 
             target = m.group(1)
-            #print(f"cding to {target}")
             path = path.get_item(target)
 
         m = re(r"^([0-9]+) ", line)
         if m:
             number = m.group(1)
-            path.add_item(number)
+            path.add_item(int(number))
         
         m = re(r"^dir (.+)$", line)
         if m:
             name = m.group(1)
             path.add_item(directory(name, path))
-
-        #print("----------------")
     return root
 
-def get_total(d, max_size = 100_000, running_sum = 0):
-    size = d.get_size()
-    if size <= max_size: running_sum += size
-    for 
-    return running_sum()
+def get_total(d, max_size = 100_000):
+  running_sum = 0
+  size = d.get_size()
+  if size <= max_size:
+    running_sum += size
+  for sd in d.sub_dirs():
+    running_sum += get_total(sd)
+  return running_sum
 
 class directory:
     def __init__(self, name:str, parent = None, size = None):
@@ -55,6 +52,7 @@ class directory:
             elif type(item) == directory:
                 temp += item.get_size()
         self.size = temp
+        return self.size
     
     def add_item(self, item):
         if self.contents == None: self.contents = []
@@ -70,6 +68,11 @@ class directory:
     
     def sub_dirs(self):
         if self.contents == None: raise Exception(f"Contents of directory {self.name} not defined!")
+        subs = []
+        for item in self.contents:
+          if type(item) == directory:
+            subs.append(item)
+        return subs
     
 
 if __name__ == "__main__": main()
